@@ -9,9 +9,14 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
+    return MaterialApp(
       title: _title,
-      home: MyStatefulWidget(),
+      //home: MyStatefulWidget(),
+      initialRoute: '/',
+      routes: {
+        '/': (context) => const MyStatefulWidget(),
+        Details.routeName: (context) => const Details(),
+      },
     );
   }
 }
@@ -20,11 +25,18 @@ class Recipe {
   late String picPath;
   late String name;
   late String desc;
-  bool isSaved;
-  Recipe({required this.picPath, required this.name, required this.desc, required this.isSaved});
+  late String prepTime;
+  late String cookTime;
+  late int servings;
+  List ingredients;
+  Recipe({required this.picPath,
+          required this.name,
+          required this.desc,
+          required this.prepTime,
+          required this.cookTime,
+          required this.servings,
+          required this.ingredients});
 }
-
-
 
 class MyStatefulWidget extends StatefulWidget {
   const MyStatefulWidget({Key? key}) : super(key: key);
@@ -41,73 +53,109 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
       picPath: 'images/gaufrettes.jpeg',
       name: 'Gaufrettes',
       desc: '',
-      isSaved: false,
+      prepTime: '1h',
+      cookTime: '1h',
+      servings: 8,
+      ingredients: [],
     ),
     Recipe(
       picPath: 'images/pain_epices.jpeg',
       name: "Pain d'épices",
       desc: '',
-      isSaved: false,
+      prepTime: '1h',
+      cookTime: '1h',
+      servings: 8,
+      ingredients: [],
     ),
     Recipe(
       picPath: 'images/royal_chocolat.jpeg',
       name: 'Royal au chocolat',
       desc: '',
-      isSaved: false,
+      prepTime: '1h',
+      cookTime: '1h',
+      servings: 8,
+      ingredients: [],
     ),
     Recipe(
       picPath: 'images/beignets.jpeg',
       name: 'Beignets de carnaval',
       desc: '-',
-      isSaved: false,
+      prepTime: '1h',
+      cookTime: '1h',
+      servings: 8,
+      ingredients: [],
     ),
     Recipe(
       picPath: 'images/tarte_citron.jpeg',
       name: 'Tarte au citron',
       desc: '',
-      isSaved: false,
+      prepTime: '1h',
+      cookTime: '1h',
+      servings: 8,
+      ingredients: [],
     ),
     Recipe(
       picPath: 'images/pancakes.jpeg',
       name: 'Pancakes',
       desc: '',
-      isSaved: false,
+      prepTime: '1h',
+      cookTime: '1h',
+      servings: 8,
+      ingredients: [],
     ),
     Recipe(
       picPath: 'images/cookies.jpeg',
       name: 'Cookies',
       desc: '',
-      isSaved: false,
+      prepTime: '1h',
+      cookTime: '1h',
+      servings: 8,
+      ingredients: [],
     ),
     Recipe(
       picPath: 'images/canneles.jpeg',
       name: 'Cannelés',
       desc: '',
-      isSaved: false,
+      prepTime: '1h',
+      cookTime: '1h',
+      servings: 8,
+      ingredients: [],
     ),
     Recipe(
       picPath: 'images/meringues.jpeg',
       name: 'Meringues',
       desc: '',
-      isSaved: false,
+      prepTime: '1h',
+      cookTime: '1h',
+      servings: 8,
+      ingredients: [],
     ),
     Recipe(
       picPath: 'images/shortbreads.jpeg',
       name: 'Shortbreads',
       desc: "Aka '123SBF'",
-      isSaved: false,
+      prepTime: '1h',
+      cookTime: '1h',
+      servings: 8,
+      ingredients: [],
     ),
     Recipe(
       picPath: 'images/tarte_mirabelles.jpeg',
       name: 'Tarte aux mirabelles',
       desc: '',
-      isSaved: false,
+      prepTime: '1h',
+      cookTime: '1h',
+      servings: 8,
+      ingredients: [],
     ),
     Recipe(
       picPath: 'images/gaufres_liegeoises.jpeg',
       name: 'Gaufres liégeoises',
       desc: '',
-      isSaved: false,
+      prepTime: '1h',
+      cookTime: '1h',
+      servings: 8,
+      ingredients: [],
     ),
   ];
 
@@ -153,7 +201,6 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
 
       body: tabs[_selectedIndex],
 
-
       bottomNavigationBar: BottomNavigationBar(
         items: const <BottomNavigationBarItem>[
           BottomNavigationBarItem(
@@ -190,18 +237,68 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
           setState(() {
             if (alreadySaved) {
               savedRecipes.remove(recipe);
-              recipe.isSaved = false;
             } else {
               savedRecipes.add(recipe);
-              recipe.isSaved = true;
             }
           });
         },
       ),
       onTap: () {
-        //remplir
-      },
+        Navigator.pushNamed(
+          context,
+          Details.routeName,
+          arguments: Recipe(
+            picPath: recipe.picPath,
+            name: recipe.name,
+            desc: recipe.desc,
+            prepTime: recipe.prepTime,
+            cookTime: recipe.cookTime,
+            servings: recipe.servings,
+            ingredients: recipe.ingredients,
+          ),
+        );
+      }
     );
   }
+}
 
+class Details extends StatelessWidget {
+  const Details({Key? key}) : super(key: key);
+  static const routeName = '/details';
+
+  @override
+  Widget build(BuildContext context) {
+    final recipe = ModalRoute.of(context)!.settings.arguments as Recipe;
+
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Details'),
+        backgroundColor: Colors.deepPurple,
+      ),
+      body: Center(
+        child: Column(
+          children: [
+            const SizedBox(height: 50),
+            //Expanded(child: Text(recipe.name)),
+            Text(recipe.name),
+            const SizedBox(height: 25),
+            Expanded(child: Image.asset(recipe.picPath)),
+            const SizedBox(height: 10),
+            Row(
+              children: [
+                Column(
+                  //fill with ingredients
+                ),
+                Expanded(child: Text(recipe.desc)),
+                //keep desc here
+                Expanded(child: Text(recipe.prepTime)),
+                Expanded(child: Text(recipe.cookTime)),
+                Expanded(child: Text(recipe.servings.toString())),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
 }
